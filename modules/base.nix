@@ -108,7 +108,6 @@
   #
   # === Nix Settings ===
   #
-  nix.nixPath = [ "nixos-config=/etc/nixos/configuration.nix" ];
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     substituters = [ "https://nixos-clockworkpi-uconsole.cachix.org" ];
