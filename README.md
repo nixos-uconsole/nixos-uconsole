@@ -28,18 +28,56 @@ sudo dd if=result/sd-image/*.img of=/dev/sdX bs=4M status=progress
 sync
 ```
 
+### Resize Partition
+
+After flashing, expand the root partition to use all available space:
+
+```bash
+sudo parted /dev/sdX resizepart 2 100%
+sudo resize2fs /dev/sdX2
+```
+
 ### First Boot
 
 1. Insert SD card into uConsole and power on
-2. Connect via SSH or use the built-in display
-3. Login as `uconsole` or `root` with password `changeme`
-4. You'll be prompted to change the password on first login
+2. Login as `root` with password `changeme` (will be changed on first login)
 
 ### Connect to WiFi
 
 ```bash
 nmtui
 ```
+
+### Configure Your System
+
+Generate a base configuration:
+
+```bash
+nixos-generate-config
+```
+
+Edit `/etc/nixos/configuration.nix` and add the bootloader settings:
+
+```nix
+{ config, pkgs, ... }:
+{
+  imports = [ ./hardware-configuration.nix ];
+
+  # Required for Raspberry Pi
+  boot.loader.grub.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
+
+  # Your settings here...
+}
+```
+
+Then rebuild:
+
+```bash
+nixos-rebuild switch
+```
+
+Alternatively, clone an existing NixOS config and adapt it - just ensure the bootloader is set correctly.
 
 ## Using in Your Own Flake
 
