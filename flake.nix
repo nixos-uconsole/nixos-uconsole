@@ -14,7 +14,7 @@
     let
       # Helper function to create uConsole SD image configurations
       # Takes additional modules as argument for customization
-      mkUconsoleImage = { modules ? [] }: nixos-raspberrypi.lib.nixosSystem {
+      mkUConsoleImage = { modules ? [] }: nixos-raspberrypi.lib.nixosSystem {
         # specialArgs makes these values available to all modules
         # Left side = attribute name modules will use
         # Right side = the actual value
@@ -114,7 +114,7 @@
 
             system.stateVersion = "25.11";
           })
-        ] ++ modules;  # Append any custom modules passed to mkUconsoleImage
+        ] ++ modules;  # Append any custom modules passed to mkUConsoleImage
       };
 
       # Helper function for users to create their own uConsole configurations
@@ -181,7 +181,7 @@
       # Build with: nix build .#minimal
       #
       packages.aarch64-linux = {
-        minimal = (mkUconsoleImage {
+        minimal = (mkUConsoleImage {
           modules = [ ./images/minimal.nix ];
         }).config.system.build.sdImage;
       };
@@ -191,7 +191,7 @@
       # For evaluation/building: nix build .#nixosConfigurations.uconsole-cm4-minimal.config.system.build.toplevel
       #
       nixosConfigurations = {
-        uconsole-cm4-minimal = mkUconsoleImage {
+        uconsole-cm4-minimal = mkUConsoleImage {
           modules = [ ./images/minimal.nix ];
         };
       };
