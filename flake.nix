@@ -49,6 +49,7 @@
           self.nixosModules.configtxt  # Raspberry Pi boot configuration
           self.nixosModules.cm4        # CM4-specific kernel parameters
           self.nixosModules.base       # Good defaults (NetworkManager, SSH, etc.)
+          self.nixosModules.uc-sleep   # Power button sleep/wake handling
 
           #
           # === Compatibility Fixes ===
@@ -132,6 +133,7 @@
           self.nixosModules.kernel
           self.nixosModules.configtxt
           self.nixosModules.cm4
+          self.nixosModules.uc-sleep
 
           # Compatibility fixes
           ({ lib, modulesPath, ... }: {
@@ -160,6 +162,7 @@
         configtxt = import ./modules/configtxt.nix;
         cm4 = import ./modules/cm4.nix;
         base = import ./modules/base.nix;
+        uc-sleep = import ./modules/uc-sleep.nix;
 
         # All-in-one: imports all uConsole CM4 modules
         uconsole-cm4 = { ... }: {
@@ -168,6 +171,7 @@
             self.nixosModules.configtxt
             self.nixosModules.cm4
             self.nixosModules.base
+            self.nixosModules.uc-sleep
           ];
         };
       };
