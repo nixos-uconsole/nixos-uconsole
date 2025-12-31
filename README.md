@@ -107,3 +107,4 @@ MIT
 - [ClockworkPi](https://www.clockworkpi.com/) for the uConsole hardware
 - [oom-hardware](https://github.com/robertjakub/oom-hardware) for the original kernel patches
 - [nixos-raspberrypi](https://github.com/robertjakub/nixos-raspberrypi) for Raspberry Pi NixOS support
+- [ByteBakers](https://bytebakers.dev) for build infrastructure
