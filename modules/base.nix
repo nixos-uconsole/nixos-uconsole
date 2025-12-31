@@ -6,9 +6,25 @@
 { config, lib, pkgs, ... }:
 {
   #
+  # === Bootloader ===
+  # RPi uses direct kernel boot, not grub
+  #
+  boot.loader.grub.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
+
+  #
   # === Networking ===
   #
   networking.networkmanager.enable = true;
+
+  #
+  # === Time Sync ===
+  # RPi has no hardware clock, so we need to:
+  # 1. Restore last known time on boot (fake-hwclock)
+  # 2. Sync with NTP once online (timesyncd)
+  #
+  services.timesyncd.enable = true;
+  services.fake-hwclock.enable = true;
 
   #
   # === SSH ===
@@ -44,16 +60,7 @@
   # === Users ===
   # Default password: changeme (MUST be changed on first login)
   #
-  users.users = {
-    root.initialPassword = "changeme";
-
-    uconsole = {
-      isNormalUser = true;
-      description = "uConsole User";
-      extraGroups = [ "wheel" "networkmanager" "video" "audio" ];
-      initialPassword = "changeme";
-    };
-  };
+  users.users.root.initialPassword = "changeme";
 
   # Force password change on first login
   systemd.services.force-password-change = {
@@ -67,7 +74,6 @@
     script = ''
       if [ ! -f /var/lib/.passwords-expired ]; then
         ${pkgs.shadow}/bin/chage -d 0 root
-        ${pkgs.shadow}/bin/chage -d 0 uconsole
         touch /var/lib/.passwords-expired
       fi
     '';
@@ -112,6 +118,7 @@
   #
   # === Nix Settings ===
   #
+  nix.nixPath = [ "nixos-config=/etc/nixos/configuration.nix" ];
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     substituters = [ "https://nixos-clockworkpi-uconsole.cachix.org" ];
