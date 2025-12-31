@@ -112,5 +112,9 @@
   #
   # === Nix Settings ===
   #
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    substituters = [ "https://nixos-clockworkpi-uconsole.cachix.org" ];
+    trusted-public-keys = [ "nixos-clockworkpi-uconsole.cachix.org-1:6NRN3n9/r3w5ZS8/gZudW6PkPDoC3liCt/dBseICua0=" ];
+  };
 }

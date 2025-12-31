@@ -4,7 +4,20 @@ NixOS for ClockworkPi uConsole.
 
 ## Quick Start
 
-### Flash the Image
+### Download Pre-built Image
+
+Download the latest release from [GitHub Releases](https://github.com/nixos-uconsole/nixos-uconsole/releases).
+
+```bash
+# Decompress
+zstd -d nixos-uconsole-cm4-*.img.zst
+
+# Flash to SD card (replace sdX with your device)
+sudo dd if=nixos-uconsole-cm4-*.img of=/dev/sdX bs=4M status=progress
+sync
+```
+
+### Build from Source
 
 ```bash
 # Build the minimal image
@@ -93,7 +106,7 @@ nix build .#nixosConfigurations.uconsole-cm4-minimal.config.system.build.sdImage
 
 Building on x86_64 works but takes longer. Native aarch64 builds are faster.
 
-To speed up builds, you can use a remote builder or binary cache.
+The base module includes our binary cache, so rebuilds on the device pull pre-built packages automatically.
 
 ## Hardware Support
 
