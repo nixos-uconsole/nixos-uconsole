@@ -65,7 +65,7 @@ in
     environment.systemPackages = [ uconsole-4g ];
 
     # ModemManager for talking to the 4G modem
-    services.modemManager.enable = true;
+    networking.modemmanager.enable = true;
 
     # NetworkManager integrates with ModemManager for connections
     networking.networkmanager.enable = true;
