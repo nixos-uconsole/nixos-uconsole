@@ -23,15 +23,29 @@ echo "==> Creating release ${NEXT_VERSION}..."
 gh release create "$NEXT_VERSION" \
   --repo "$REPO" \
   --title "$NEXT_VERSION" \
+  --generate-notes \
   --notes "NixOS uConsole CM4 image
 
-Flash with:
-\`\`\`
+## Flash
+
+\`\`\`bash
 zstd -d ${IMG_NAME} -o nixos-uconsole.img
 sudo dd if=nixos-uconsole.img of=/dev/sdX bs=4M status=progress
 \`\`\`
 
-Default login: \`uconsole\` / \`changeme\`
+## Resize Partition
+
+After flashing, expand the root partition:
+
+\`\`\`bash
+sudo parted /dev/sdX resizepart 2 100%
+sudo resize2fs /dev/sdX2
+\`\`\`
+
+## First Boot
+
+1. Insert SD card into uConsole and power on
+2. Login as \`root\` with password \`changeme\` (will be changed on first login)
 "
 
 echo "==> Uploading image..."
