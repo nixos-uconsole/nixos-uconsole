@@ -4,3 +4,6 @@ result-*
 
 # Ignore automatically generated direnv output
 .direnv
+
+.devenv
+nixos*.img.zst
