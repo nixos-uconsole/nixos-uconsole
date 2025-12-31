@@ -6,25 +6,15 @@
 { config, lib, pkgs, ... }:
 {
   #
-  # === Bootloader ===
-  # RPi uses direct kernel boot, not grub
-  #
-  boot.loader.grub.enable = false;
-  boot.loader.generic-extlinux-compatible.enable = true;
-
-  #
   # === Networking ===
   #
   networking.networkmanager.enable = true;
 
   #
   # === Time Sync ===
-  # RPi has no hardware clock, so we need to:
-  # 1. Restore last known time on boot (fake-hwclock)
-  # 2. Sync with NTP once online (timesyncd)
+  # RPi has no hardware clock, sync with NTP once online
   #
   services.timesyncd.enable = true;
-  services.fake-hwclock.enable = true;
 
   #
   # === SSH ===
