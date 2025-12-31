@@ -28,7 +28,7 @@ sudo resize2fs /dev/sdX2
 
 ### First Boot
 
-1. Insert SD card into uConsole and power on
+1. Insert SD card into the uConsole and power on
 2. Login as `root` with password `changeme` (will be changed on first login)
 3. Connect to WiFi: `nmtui`
 
@@ -51,10 +51,10 @@ Create a flake for your uConsole:
 }
 ```
 
-Then rebuild:
+Then rebuild (from the flake directory, or use the full path):
 
 ```bash
-sudo nixos-rebuild switch --flake .#my-uconsole
+sudo nixos-rebuild switch --flake /path/to/flake#my-uconsole
 ```
 
 ## What's Included
