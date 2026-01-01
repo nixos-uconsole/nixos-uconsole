@@ -92,6 +92,21 @@
                 boot.loader.raspberryPi.bootloader = "kernel";
 
                 #
+                # === Filesystem Configuration ===
+                # Mount the firmware partition so nixos-rebuild can update boot files
+                #
+                fileSystems."/" = {
+                  device = "/dev/disk/by-label/NIXOS_SD";
+                  fsType = "ext4";
+                };
+
+                fileSystems."/boot/firmware" = {
+                  device = "/dev/disk/by-label/FIRMWARE";
+                  fsType = "vfat";
+                  options = [ "fmask=0022" "dmask=0022" ];
+                };
+
+                #
                 # === SD Image Configuration ===
                 # These settings control how the bootable SD image is created
                 #
@@ -173,6 +188,18 @@
                 ];
                 nixpkgs.hostPlatform = "aarch64-linux";
                 boot.loader.raspberryPi.bootloader = "kernel";
+
+                # Filesystem configuration for SD card
+                fileSystems."/" = lib.mkDefault {
+                  device = "/dev/disk/by-label/NIXOS_SD";
+                  fsType = "ext4";
+                };
+
+                fileSystems."/boot/firmware" = lib.mkDefault {
+                  device = "/dev/disk/by-label/FIRMWARE";
+                  fsType = "vfat";
+                  options = [ "fmask=0022" "dmask=0022" ];
+                };
               }
             )
           ]
