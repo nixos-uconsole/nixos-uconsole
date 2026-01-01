@@ -4,9 +4,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # robertjakub's fork provides Raspberry Pi support for NixOS
-    # It handles bootloader, kernel, device trees, etc.
-    nixos-raspberrypi.url = "github:robertjakub/nixos-raspberrypi/develop";
+    # nvmd's nixos-raspberrypi provides Raspberry Pi support for NixOS
+    # Handles bootloader, kernel, device trees, etc.
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
     nixos-raspberrypi.inputs.nixpkgs.follows = "nixpkgs";
   };
 

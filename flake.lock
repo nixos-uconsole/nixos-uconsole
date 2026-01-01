@@ -69,14 +69,13 @@
       "locked": {
         "lastModified": 1765673398,
         "narHash": "sha256-vgaFfxB2c0Nd+fGyMpxtJM7+XVT5H8bu3e6TmHfA+xw=",
-        "owner": "robertjakub",
+        "owner": "nvmd",
         "repo": "nixos-raspberrypi",
         "rev": "f8900910f63477626010938da8d849ba2cc3d011",
         "type": "github"
       },
       "original": {
-        "owner": "robertjakub",
-        "ref": "develop",
+        "owner": "nvmd",
         "repo": "nixos-raspberrypi",
         "type": "github"
       }
