@@ -100,10 +100,12 @@
                   fsType = "ext4";
                 };
 
+                # Override nixpkgs sd-image.nix which hardcodes noauto/nofail
+                # We need automount for nixos-raspberrypi's generational bootloader
                 fileSystems."/boot/firmware" = {
                   device = "/dev/disk/by-label/FIRMWARE";
                   fsType = "vfat";
-                  options = [ "fmask=0022" "dmask=0022" ];
+                  options = lib.mkForce [ "fmask=0022" "dmask=0022" ];
                 };
 
                 #
@@ -195,10 +197,12 @@
                   fsType = "ext4";
                 };
 
-                fileSystems."/boot/firmware" = lib.mkDefault {
-                  device = "/dev/disk/by-label/FIRMWARE";
-                  fsType = "vfat";
-                  options = [ "fmask=0022" "dmask=0022" ];
+                # Override nixpkgs sd-image.nix which hardcodes noauto/nofail
+                # We need automount for nixos-raspberrypi's generational bootloader
+                fileSystems."/boot/firmware" = {
+                  device = lib.mkDefault "/dev/disk/by-label/FIRMWARE";
+                  fsType = lib.mkDefault "vfat";
+                  options = lib.mkForce [ "fmask=0022" "dmask=0022" ];
                 };
               }
             )
