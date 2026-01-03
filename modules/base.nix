@@ -3,7 +3,12 @@
 # Sensible defaults for a usable uConsole system.
 # Services are enabled and auto-start so the system is ready immediately after flashing.
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   #
   # === Networking ===
@@ -22,7 +27,7 @@
   services.openssh = {
     enable = true;
     settings = {
-      PermitRootLogin = "yes";  # For initial setup - disable after!
+      PermitRootLogin = "yes"; # For initial setup - disable after!
       PasswordAuthentication = true;
     };
   };
@@ -83,7 +88,7 @@
     # Network
     curl
     wget
-    iw  # WiFi debugging (scan, signal, etc.)
+    iw # WiFi debugging (scan, signal, etc.)
 
     # Bluetooth
     bluetuith
@@ -109,8 +114,13 @@
   # === Nix Settings ===
   #
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     substituters = [ "https://nixos-clockworkpi-uconsole.cachix.org" ];
-    trusted-public-keys = [ "nixos-clockworkpi-uconsole.cachix.org-1:6NRN3n9/r3w5ZS8/gZudW6PkPDoC3liCt/dBseICua0=" ];
+    trusted-public-keys = [
+      "nixos-clockworkpi-uconsole.cachix.org-1:6NRN3n9/r3w5ZS8/gZudW6PkPDoC3liCt/dBseICua0="
+    ];
   };
 }

@@ -1,4 +1,9 @@
-{ lib, python3Packages, fetchFromGitHub, ... }:
+{
+  lib,
+  python3Packages,
+  fetchFromGitHub,
+  ...
+}:
 python3Packages.buildPythonApplication {
   pname = "uc-sleep";
   version = "0-unstable-20251215";
