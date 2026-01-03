@@ -8,7 +8,12 @@
 # Build with: nix build .#images.minimal
 # Flash with: dd if=result/sd-image/*.img of=/dev/sdX bs=4M status=progress
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   # The base modules are already imported via the flake's mkUconsoleImage
   # This file is for any minimal-image-specific settings
