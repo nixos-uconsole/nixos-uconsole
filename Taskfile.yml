@@ -16,3 +16,9 @@ tasks:
     desc: "Cross-compile minimal SD image from x86_64"
     cmds:
       - nix build .#packages.x86_64-linux.minimal
+
+  # Formatting
+  fmt:
+    desc: "Formats the repository"
+    cmds:
+      - treefmt .
