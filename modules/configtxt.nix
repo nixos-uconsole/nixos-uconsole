@@ -141,7 +141,6 @@ in
         };
 
         # Audio remap: route audio to GPIO 12/13 (headphone jack)
-        # TODO: move to the module-specific section
         audremap = {
           enable = lib.mkDefault true;
           params = {
