@@ -105,7 +105,10 @@
                 fileSystems."/boot/firmware" = {
                   device = "/dev/disk/by-label/FIRMWARE";
                   fsType = "vfat";
-                  options = lib.mkForce [ "fmask=0022" "dmask=0022" ];
+                  options = lib.mkForce [
+                    "fmask=0022"
+                    "dmask=0022"
+                  ];
                 };
 
                 #
@@ -202,7 +205,10 @@
                 fileSystems."/boot/firmware" = {
                   device = lib.mkDefault "/dev/disk/by-label/FIRMWARE";
                   fsType = lib.mkDefault "vfat";
-                  options = lib.mkForce [ "fmask=0022" "dmask=0022" ];
+                  options = lib.mkForce [
+                    "fmask=0022"
+                    "dmask=0022"
+                  ];
                 };
               }
             )

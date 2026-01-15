@@ -5,7 +5,12 @@
 #
 # The threshold can be configured via settings.
 
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 let
   cfg = config.services.uc-sleep;
 

@@ -1,0 +1,18 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task --list-all
+
+  # Image building
+
+  build:
+    desc: "Build minimal SD image (native)"
+    cmds:
+      - nix build .#minimal
+
+  build:cross:
+    desc: "Cross-compile minimal SD image from x86_64"
+    cmds:
+      - nix build .#packages.x86_64-linux.minimal

@@ -1,5 +1,16 @@
-{ lib, python3Packages, fetchFromGitHub, ... }:
-python3Packages.buildPythonApplication {
+{
+  lib,
+  python3,
+  fetchFromGitHub,
+  ...
+}:
+let
+  python = python3.withPackages (ps: [
+    ps.python-uinput
+    ps.inotify-simple
+  ]);
+in
+python3.pkgs.buildPythonApplication {
   pname = "uc-sleep";
   version = "0-unstable-20251215";
   format = "other";
@@ -11,28 +22,18 @@ python3Packages.buildPythonApplication {
     hash = "sha256-zJzKKENLPsgun7zGSpNLy6LPcdO55F/XeLDbAxxZpD0=";
   };
 
-  dependencies = with python3Packages; [
-    python-uinput
-    inotify-simple
-  ];
-
-  nativeBuildInputs = [
-    python3Packages.pyinstaller
-  ];
-
-  buildPhase = ''
-    runHook preBuild
-    cd src
-    pyinstaller --clean --noconfirm --hidden-import=_libsuinput -F --distpath . sleep_power_control.py
-    pyinstaller --clean --noconfirm --hidden-import=_libsuinput -F --distpath . sleep_remap_powerkey.py
-    runHook postBuild
-  '';
+  dontBuild = true;
 
   installPhase = ''
     runHook preInstall
     mkdir -p $out/bin
-    install -m 0555 sleep_power_control $out/bin
-    install -m 0555 sleep_remap_powerkey $out/bin
+    echo "#!${python}/bin/python3" > $out/bin/sleep_power_control
+    cat src/sleep_power_control.py >> $out/bin/sleep_power_control
+    chmod 0555 $out/bin/sleep_power_control
+
+    echo "#!${python}/bin/python3" > $out/bin/sleep_remap_powerkey
+    cat src/sleep_remap_powerkey.py >> $out/bin/sleep_remap_powerkey
+    chmod 0555 $out/bin/sleep_remap_powerkey
     runHook postInstall
   '';
 

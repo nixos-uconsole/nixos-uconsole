@@ -13,12 +13,12 @@ let
   # Kernel patches from ClockworkPi/oom-hardware
   # Each patch addresses specific uConsole hardware support
   patches = [
-    ./patches/0001-configs.patch       # Kernel config options
-    ./patches/0002-panel.patch         # CWU50 display panel driver
-    ./patches/0003-power.patch         # AXP228 power management
-    ./patches/0004-backlight.patch     # OCP8178 backlight controller
-    ./patches/0005-overlays.patch      # Device tree overlays
-    ./patches/0006-bcm2835-staging.patch  # BCM2835 staging driver fixes
+    ./patches/0001-configs.patch # Kernel config options
+    ./patches/0002-panel.patch # CWU50 display panel driver
+    ./patches/0003-power.patch # AXP228 power management
+    ./patches/0004-backlight.patch # OCP8178 backlight controller
+    ./patches/0005-overlays.patch # Device tree overlays
+    ./patches/0006-bcm2835-staging.patch # BCM2835 staging driver fixes
     ./patches/0007-simple-switch.patch # Audio switch support
   ];
 in
@@ -26,25 +26,24 @@ in
   # Load these kernel modules early in boot (initrd)
   # Required for the display to work during early boot
   boot.initrd.kernelModules = [
-    "ocp8178_bl"   # Backlight controller
-    "panel_cwu50"  # Display panel driver
-    "vc4"          # VideoCore 4 GPU driver
+    "ocp8178_bl" # Backlight controller
+    "panel_cwu50" # Display panel driver
+    "vc4" # VideoCore 4 GPU driver
   ];
 
   # Apply the uConsole patches to the kernel
   boot.kernelPatches =
     # Convert each patch file to a kernel patch definition
-    (builtins.map
-      (patch: {
-        name = patch + "";  # Use patch filename as name
-        patch = patch;
-      })
-      patches
-    )
+    (builtins.map (patch: {
+      name = patch + ""; # Use patch filename as name
+      patch = patch;
+    }) patches)
     # Add an empty config patch (placeholder for future kernel config tweaks)
-    ++ [{
-      name = "uc-config";
-      patch = null;
-      structuredExtraConfig = { };
-    }];
+    ++ [
+      {
+        name = "uc-config";
+        patch = null;
+        structuredExtraConfig = { };
+      }
+    ];
 }

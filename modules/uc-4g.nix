@@ -9,7 +9,13 @@
 #   mmcli -L             # List detected modems
 #   nmtui                # Connect via NetworkManager
 
-{ pkgs, lib, config, nixos-raspberrypi, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  nixos-raspberrypi,
+  ...
+}:
 let
   cfg = config.hardware.uc-4g;
 
