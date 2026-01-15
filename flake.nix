@@ -263,9 +263,11 @@
                 zstd
                 # Dev tools
                 nixd # Nix LSP
-                nixfmt-rfc-style # Nix formatter
+                nixfmt # Nix formatter
+                nixfmt-tree # Nix formatter for full repo formatting
                 bash-language-server # Bash LSP
                 shellcheck # Bash linter
+                go-task # Task, kinda like `Make`
               ];
             };
         in
