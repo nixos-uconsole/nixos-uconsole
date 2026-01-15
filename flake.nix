@@ -20,9 +20,11 @@
     let
       # Helper function to create uConsole SD image configurations
       # Takes additional modules as argument for customization
+      # buildPlatform: set to "x86_64-linux" to cross-compile from x86
       mkUConsoleImage =
         {
           modules ? [ ],
+          buildPlatform ? null,
         }:
         nixos-raspberrypi.lib.nixosSystem {
           # specialArgs makes these values available to all modules
@@ -87,6 +89,9 @@
 
                 # Tell Nix we're building for ARM64
                 nixpkgs.hostPlatform = "aarch64-linux";
+
+                # Enable cross-compilation if buildPlatform is specified
+                nixpkgs.buildPlatform = lib.mkIf (buildPlatform != null) buildPlatform;
 
                 # Use the "kernel" bootloader (direct kernel boot, not u-boot)
                 boot.loader.raspberryPi.bootloader = "kernel";
@@ -160,10 +165,12 @@
 
       # Helper function for users to create their own uConsole configurations
       # Usage: nixos-uconsole.lib.mkUConsoleSystem { modules = [ ./configuration.nix ]; }
+      # For cross-compilation: nixos-uconsole.lib.mkUConsoleSystem { buildPlatform = "x86_64-linux"; modules = [...]; }
       mkUConsoleSystem =
         {
           modules ? [ ],
           specialArgs ? { },
+          buildPlatform ? null,
         }:
         nixos-raspberrypi.lib.nixosSystem {
           specialArgs = {
@@ -192,6 +199,7 @@
                   (lib.mkAliasOptionModule [ "environment" "checkConfigurationOptions" ] [ "_module" "check" ])
                 ];
                 nixpkgs.hostPlatform = "aarch64-linux";
+                nixpkgs.buildPlatform = lib.mkIf (buildPlatform != null) buildPlatform;
                 boot.loader.raspberryPi.bootloader = "kernel";
 
                 # Filesystem configuration for SD card
@@ -279,11 +287,21 @@
       #
       # === Pre-built Images ===
       # Build with: nix build .#minimal
+      # Cross-compile from x86: nix build .#packages.x86_64-linux.minimal
       #
       packages.aarch64-linux = {
         minimal =
           (mkUConsoleImage {
             modules = [ ./images/minimal.nix ];
+          }).config.system.build.sdImage;
+      };
+
+      # Cross-compiled images (build aarch64 images on x86_64)
+      packages.x86_64-linux = {
+        minimal =
+          (mkUConsoleImage {
+            modules = [ ./images/minimal.nix ];
+            buildPlatform = "x86_64-linux";
           }).config.system.build.sdImage;
       };
 
