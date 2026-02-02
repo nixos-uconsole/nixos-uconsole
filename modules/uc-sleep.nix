@@ -16,11 +16,6 @@ let
 
   # Build the uc-sleep package
   uc-sleep-pkg = pkgs.callPackage ../pkgs/uc-sleep.nix { };
-
-  envFile = pkgs.writeTextFile {
-    name = "uc-sleep.env";
-    text = lib.concatStringsSep "\n" cfg.settings;
-  };
 in
 {
   options.services.uc-sleep = {
@@ -35,40 +30,31 @@ in
       default = uc-sleep-pkg;
       description = "The uc-sleep package to use";
     };
-
-    settings = lib.mkOption {
-      type = with lib.types; listOf str;
-      default = [ ];
-      example = [ "HOLD_TRIGGER_SEC=1.0" ];
-      description = "Environment variables for uc-sleep services";
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    systemd.services."sleep-remap-powerkey" = {
-      description = "uConsole Sleep Remap PowerKey";
+    systemd.services."uc-power-button" = {
+      description = "uConsole Power Button Handler";
       after = [ "basic.target" ];
       wantedBy = [ "basic.target" ];
       serviceConfig = {
         Restart = "always";
         ExecStartPre = "${pkgs.kmod}/bin/modprobe uinput";
-        ExecStart = "${cfg.package}/bin/sleep_remap_powerkey";
+        ExecStart = "${cfg.package}/bin/uc-power-button";
         StandardOutput = "journal";
         StandardError = "journal";
-        EnvironmentFile = envFile;
       };
     };
 
-    systemd.services."sleep-power-control" = {
-      description = "uConsole Sleep Power Control";
+    systemd.services."uc-power-control" = {
+      description = "uConsole Power Control";
       after = [ "basic.target" ];
       wantedBy = [ "basic.target" ];
       serviceConfig = {
         Restart = "always";
-        ExecStart = "${cfg.package}/bin/sleep_power_control";
+        ExecStart = "${cfg.package}/bin/uc-power-control";
         StandardOutput = "journal";
         StandardError = "journal";
-        EnvironmentFile = envFile;
       };
     };
   };
