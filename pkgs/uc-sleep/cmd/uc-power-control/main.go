@@ -53,7 +53,6 @@ func run() error {
 	}
 	log.Printf("watching %s", backlightPath)
 
-	// Get initial state
 	power, err := sysfs.GetBacklightPower()
 	if err != nil {
 		log.Printf("warning: could not read initial backlight state: %v", err)
@@ -61,7 +60,6 @@ func run() error {
 		log.Printf("initial backlight state: %s", powerStateString(power))
 	}
 
-	// Set up signal handling for clean shutdown
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
@@ -109,7 +107,6 @@ func watchLoop(watcher *inotify.Watcher) error {
 func enterSleep() {
 	log.Println("entering sleep mode")
 
-	// Reduce CPU frequency
 	cpuCount, err := sysfs.GetCPUCount()
 	if err != nil {
 		log.Printf("get cpu count: %v", err)
@@ -134,14 +131,13 @@ func enterSleep() {
 func exitSleep() {
 	log.Println("exiting sleep mode")
 
-	// Rebind keyboard USB first so it's ready when screen comes on
+	// Rebind keyboard first so it's ready when screen comes on
 	if err := sysfs.BindUSBDevice(keyboardUSB); err != nil {
 		log.Printf("bind keyboard: %v", err)
 	} else {
 		log.Printf("bound keyboard USB %s", keyboardUSB)
 	}
 
-	// Restore CPU frequency
 	cpuCount, err := sysfs.GetCPUCount()
 	if err != nil {
 		log.Printf("get cpu count: %v", err)

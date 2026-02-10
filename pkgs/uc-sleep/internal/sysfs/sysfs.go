@@ -161,7 +161,6 @@ func BindUSBDevice(device string) error {
 // Returns empty string if not found.
 func FindKeyboardUSBDevice() (string, error) {
 	// uConsole keyboard is typically at 1-1.3
-	// Check if it exists
 	path := "/sys/bus/usb/devices/1-1.3"
 	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
