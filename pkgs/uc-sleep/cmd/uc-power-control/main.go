@@ -22,9 +22,6 @@ const (
 	freqMinSleep = 600000  // 600 MHz when sleeping
 	freqMaxSleep = 600000  // 600 MHz when sleeping
 	freqMaxAwake = 1800000 // 1.8 GHz when awake
-
-	// Keyboard USB device
-	keyboardUSB = "1-1.3"
 )
 
 func main() {
@@ -123,11 +120,15 @@ func enterSleep() {
 	}
 	log.Printf("reduced CPU frequency to %d kHz", freqMaxSleep)
 
-	// Unbind keyboard USB
-	if err := sysfs.UnbindUSBDevice(keyboardUSB); err != nil {
-		log.Printf("unbind keyboard: %v", err)
-	} else {
-		log.Printf("unbound keyboard USB %s", keyboardUSB)
+	keyboardUSB, err := sysfs.FindKeyboardUSBDevice()
+	if err != nil {
+		log.Printf("find keyboard: %v", err)
+	} else if keyboardUSB != "" {
+		if err := sysfs.UnbindUSBDevice(keyboardUSB); err != nil {
+			log.Printf("unbind keyboard: %v", err)
+		} else {
+			log.Printf("unbound keyboard USB %s", keyboardUSB)
+		}
 	}
 }
 
@@ -135,10 +136,15 @@ func exitSleep() {
 	log.Println("exiting sleep mode")
 
 	// Rebind keyboard first so it's ready when screen comes on
-	if err := sysfs.BindUSBDevice(keyboardUSB); err != nil {
-		log.Printf("bind keyboard: %v", err)
-	} else {
-		log.Printf("bound keyboard USB %s", keyboardUSB)
+	keyboardUSB, err := sysfs.FindKeyboardUSBDevice()
+	if err != nil {
+		log.Printf("find keyboard: %v", err)
+	} else if keyboardUSB != "" {
+		if err := sysfs.BindUSBDevice(keyboardUSB); err != nil {
+			log.Printf("bind keyboard: %v", err)
+		} else {
+			log.Printf("bound keyboard USB %s", keyboardUSB)
+		}
 	}
 
 	cpuCount, err := sysfs.GetCPUCount()
