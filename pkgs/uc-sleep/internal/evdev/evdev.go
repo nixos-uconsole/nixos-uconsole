@@ -115,7 +115,11 @@ func (device *Device) ReadEvent() (InputEvent, error) {
 		return event, fmt.Errorf("read event: %w", err)
 	}
 	if bytesRead != InputEventSize {
-		return event, fmt.Errorf("short read: got %d, want %d", bytesRead, InputEventSize)
+		return event, fmt.Errorf(
+			"short read: got %d, want %d",
+			bytesRead,
+			InputEventSize,
+		)
 	}
 
 	event.Sec = int64(binary.LittleEndian.Uint64(buf[0:8]))

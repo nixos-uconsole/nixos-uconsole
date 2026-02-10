@@ -75,7 +75,11 @@ type Device struct {
 
 // Create creates a new virtual input device.
 func Create(name string) (*Device, error) {
-	file, err := os.OpenFile("/dev/uinput", syscall.O_WRONLY|syscall.O_NONBLOCK, 0)
+	file, err := os.OpenFile(
+		"/dev/uinput",
+		syscall.O_WRONLY|syscall.O_NONBLOCK,
+		0,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("open /dev/uinput: %w", err)
 	}
@@ -141,7 +145,12 @@ func (device *Device) encodeUserDev(uidev uinputUserDev) []byte {
 }
 
 func (device *Device) ioctl(request uintptr, arg uintptr) error {
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, device.file.Fd(), request, arg)
+	_, _, errno := syscall.Syscall(
+		syscall.SYS_IOCTL,
+		device.file.Fd(),
+		request,
+		arg,
+	)
 	if errno != 0 {
 		return errno
 	}
@@ -184,7 +193,11 @@ func (device *Device) EmitKey(code uint16) error {
 	return device.EmitKeyRelease(code)
 }
 
-func (device *Device) emitEvent(eventType uint16, code uint16, value int32) error {
+func (device *Device) emitEvent(
+	eventType uint16,
+	code uint16,
+	value int32,
+) error {
 	if device.file == nil {
 		return ErrDeviceNotOpen
 	}
