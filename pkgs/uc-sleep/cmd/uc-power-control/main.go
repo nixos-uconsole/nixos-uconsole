@@ -44,7 +44,10 @@ func run() error {
 	defer watcher.Close()
 
 	backlightPath := sysfs.BacklightPath + "/bl_power"
-	_, err = watcher.AddWatch(backlightPath, inotify.InModify|inotify.InCloseWrite)
+	_, err = watcher.AddWatch(
+		backlightPath,
+		inotify.InModify|inotify.InCloseWrite,
+	)
 	if err != nil {
 		return err
 	}
