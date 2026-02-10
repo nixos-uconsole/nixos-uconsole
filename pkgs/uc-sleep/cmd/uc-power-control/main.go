@@ -114,6 +114,9 @@ func enterSleep() {
 	}
 
 	for cpu := 0; cpu < cpuCount; cpu++ {
+		if err := sysfs.SetCPUFreqMin(cpu, freqMinSleep); err != nil {
+			log.Printf("set cpu%d min freq: %v", cpu, err)
+		}
 		if err := sysfs.SetCPUFreqMax(cpu, freqMaxSleep); err != nil {
 			log.Printf("set cpu%d max freq: %v", cpu, err)
 		}
