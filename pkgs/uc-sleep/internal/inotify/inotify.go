@@ -113,6 +113,13 @@ func (watcher *Watcher) ReadEvent() (Event, error) {
 	}
 
 	if event.Len > 0 {
+		if 16+int(event.Len) > bytesRead {
+			return Event{}, fmt.Errorf(
+				"truncated event: len=%d, read=%d",
+				event.Len,
+				bytesRead,
+			)
+		}
 		nameBytes := buf[16 : 16+event.Len]
 		for i, b := range nameBytes {
 			if b == 0 {
