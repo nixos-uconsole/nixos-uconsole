@@ -83,6 +83,10 @@
             self.nixosModules.uc-power # Power management
             self.nixosModules.uc-4g # Optional 4G module (enable with hardware.uc-4g.enable)
 
+            # Enable power management by default for uConsole
+            { services.uconsole.power-button.enable = true; }
+            { services.uconsole.display-power.enable = true; }
+
             #
             # === Compatibility Fixes ===
             # Required workarounds for nixos-raspberrypi integration
@@ -205,6 +209,10 @@
               self.nixosModules.base
               self.nixosModules.uc-power
               self.nixosModules.uc-4g
+
+              # Enable power management by default for uConsole
+              { services.uconsole.power-button.enable = true; }
+              { services.uconsole.display-power.enable = true; }
 
               # Compatibility fixes
               (
