@@ -5,26 +5,25 @@
 }:
 
 buildGoModule {
-  pname = "uc-sleep";
-  version = "0.1.0";
+  pname = "uc-power";
+  version = "0.2.0";
 
-  src = ./uc-sleep;
+  src = ./uc-power;
 
-  vendorHash = null; # pure stdlib, no deps
+  vendorHash = "sha256-hj1rQJED2llW782lPYYWDD1TgNgHPa0z9nUdj4kWryw=";
 
   ldflags = [
     "-s"
     "-w"
   ];
 
-  # Build both commands
   subPackages = [
     "cmd/uc-power-button"
-    "cmd/uc-power-control"
+    "cmd/uc-display-power"
   ];
 
   meta = {
-    description = "uConsole power button sleep/wake handling";
+    description = "uConsole power management utilities";
     homepage = "https://github.com/nixos-uconsole/nixos-uconsole";
     license = lib.licenses.mit;
     platforms = lib.platforms.linux;

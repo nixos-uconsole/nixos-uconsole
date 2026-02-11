@@ -80,7 +80,7 @@
             self.nixosModules.configtxt # Raspberry Pi boot configuration
             self.nixosModules.cm # Compute module kernel parameters
             self.nixosModules.base # Good defaults (NetworkManager, SSH, etc.)
-            self.nixosModules.uc-sleep # Power button sleep/wake handling
+            self.nixosModules.uc-power # Power management
             self.nixosModules.uc-4g # Optional 4G module (enable with hardware.uc-4g.enable)
 
             #
@@ -203,7 +203,7 @@
               self.nixosModules.configtxt
               self.nixosModules.cm
               self.nixosModules.base
-              self.nixosModules.uc-sleep
+              self.nixosModules.uc-power
               self.nixosModules.uc-4g
 
               # Compatibility fixes
@@ -257,7 +257,7 @@
         configtxt = import ./modules/configtxt.nix;
         cm = import ./modules/cm.nix;
         base = import ./modules/base.nix;
-        uc-sleep = import ./modules/uc-sleep.nix;
+        uc-power = import ./modules/uc-power.nix;
         uc-4g = import ./modules/uc-4g.nix;
 
         # All-in-one: imports all uConsole modules (use with appropriate rpi base)
@@ -272,7 +272,7 @@
                 isCM4 = true;
               })
               self.nixosModules.base
-              self.nixosModules.uc-sleep
+              self.nixosModules.uc-power
               self.nixosModules.uc-4g
             ];
           };
@@ -288,7 +288,7 @@
                 isCM4 = false;
               })
               self.nixosModules.base
-              self.nixosModules.uc-sleep
+              self.nixosModules.uc-power
               self.nixosModules.uc-4g
             ];
           };
