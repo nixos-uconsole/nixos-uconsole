@@ -1,0 +1,132 @@
+# golangci-lint configuration for nixos-uconsole
+#
+# Copied and adapted from findleads/platform
+
+version = "2"
+
+[run]
+timeout = "5m"
+go = "1.25"
+concurrency = 4
+modules-download-mode = "readonly"
+
+[output]
+sort-order = ["linter", "file"]
+show-stats = true
+
+[linters]
+default = "all"
+
+disable = [
+    "lll",
+    "varnamelen",
+    "depguard",
+    "funlen",
+    "godox",
+    "godot",
+    "gochecknoglobals",
+    "tagliatelle",
+    "cyclop",
+    "nonamedreturns",
+    "contextcheck",
+    "noinlineerr",
+    "wsl",
+]
+
+[formatters]
+enable = [
+    "gofumpt",
+]
+
+[linters.settings.wsl_v5]
+allow-first-in-block = true
+allow-whole-block = false
+branch-max-lines = 2
+
+[linters.settings.gocyclo]
+min-complexity = 30
+
+[linters.settings.errcheck]
+check-type-assertions = true
+check-blank = false
+exclude-functions = ["(*os.File).Close", "(*database/sql.Rows).Close"]
+
+[linters.settings.gosec]
+severity = "medium"
+confidence = "medium"
+excludes = [
+    "G104",
+    "G204",
+]
+
+[linters.settings.govet]
+enable-all = true
+disable = [
+    "shadow",
+    "fieldalignment",
+]
+
+[linters.settings.staticcheck]
+checks = ["all"]
+
+[linters.settings.misspell]
+locale = "US"
+
+[formatters.settings.goimports]
+local-prefixes = "github.com/nixos-uconsole"
+
+[linters.exclusions]
+generated = "strict"
+warn-unused = false
+
+presets = [
+    "comments",
+    "std-error-handling",
+]
+
+[[linters.exclusions.rules]]
+path = ".*_sqlc\\.go$"
+linters = ["all"]
+
+[[linters.exclusions.rules]]
+path = ".*_templ\\.go$"
+linters = ["all"]
+
+[[linters.exclusions.rules]]
+path = "\\.sql\\.go$"
+linters = ["all"]
+
+[[linters.exclusions.rules]]
+path = "_test\\.go$"
+linters = ["gocyclo", "funlen", "cyclop"]
+
+[[linters.exclusions.rules]]
+path = "_test\\.go$"
+text = "unused parameter"
+linters = ["unparam"]
+
+[[linters.exclusions.rules]]
+path = "cmd/.*\\.go$"
+linters = ["gochecknoglobals"]
+
+paths = [
+    "vendor/",
+    "tmp/",
+    "bin/",
+]
+
+[issues]
+max-issues-per-linter = 0
+max-same-issues = 0
+new = false
+
+[severity]
+default = "error"
+
+[[severity.rules]]
+linters = ["misspell", "godot"]
+severity = "warning"
+
+[[severity.rules]]
+linters = ["gosec", "errcheck"]
+severity = "error"

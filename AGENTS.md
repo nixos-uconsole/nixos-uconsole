@@ -229,3 +229,43 @@ Patches originate from [robertjakub/oom-hardware](https://github.com/robertjakub
 - **Comments**: Explain *why*, not *what* - especially for workarounds
 - **Module files**: Start with comment block explaining purpose
 - **Option defaults**: Use `lib.mkDefault` so users can override
+
+## Go Code
+
+Go packages live in `pkgs/`. See [docs/agents/go-code-style.md](docs/agents/go-code-style.md) for full guidelines.
+
+### Quick Reference
+
+```bash
+# Lint Go code
+golangci-lint run ./pkgs/...
+
+# Build Go packages
+go build ./pkgs/uc-sleep/...
+
+# Test
+go test ./pkgs/...
+```
+
+### Core Principles
+
+1. **Stdlib only** - No third-party deps, no CGo
+2. **Clear over clever** - Grug-brained development
+3. **Explicit over implicit** - No magic
+4. **Rule of Three** - Only extract after copying 3 times
+
+### File Organization
+
+```
+pkgs/
+└── uc-sleep/
+    ├── go.mod
+    ├── cmd/
+    │   ├── uc-power-button/main.go
+    │   └── uc-power-control/main.go
+    └── internal/
+        ├── evdev/       # Input event reading
+        ├── uinput/      # Virtual input device
+        ├── inotify/     # File watching
+        └── sysfs/       # Sysfs read/write
+```
