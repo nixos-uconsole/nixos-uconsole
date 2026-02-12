@@ -127,6 +127,7 @@ in
         description = "uConsole Power Button Handler";
         after = [ "basic.target" ];
         wantedBy = [ "basic.target" ];
+        path = [ pkgs.bash ];
         serviceConfig = {
           Restart = "always";
           ExecStartPre = "${pkgs.kmod}/bin/modprobe uinput";

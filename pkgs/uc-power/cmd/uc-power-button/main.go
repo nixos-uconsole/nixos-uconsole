@@ -134,7 +134,7 @@ func executeAction(action string, virtualDevice *uinput.Device) {
 			log.Printf("turn on display: %v", err)
 		}
 	default:
-		cmd := exec.Command("sh", "-c", action)
+		cmd := exec.Command("bash", "-c", action)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
