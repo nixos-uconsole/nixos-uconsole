@@ -19,11 +19,14 @@ set -euo pipefail
 REPO="nixos-uconsole/nixos-uconsole"
 CACHE="nixos-clockworkpi-uconsole"
 
-echo "==> Pulling latest changes..."
-git pull
+# Skip pull/update when running on build server (fresh clone is already at HEAD)
+if [ -z "${HETZNER_BUILD:-}" ]; then
+  echo "==> Pulling latest changes..."
+  git pull
 
-echo "==> Updating flake inputs..."
-nix flake update
+  echo "==> Updating flake inputs..."
+  nix flake update
+fi
 
 # Accept version as argument, or auto-bump patch
 if [ -n "${1:-}" ]; then

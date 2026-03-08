@@ -9,9 +9,6 @@
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi";
     nixos-raspberrypi.inputs.nixpkgs.follows = "nixpkgs";
 
-    # nixos-anywhere for remote installation
-    nixos-anywhere.url = "github:nix-community/nixos-anywhere";
-    nixos-anywhere.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -19,7 +16,6 @@
       self,
       nixpkgs,
       nixos-raspberrypi,
-      nixos-anywhere,
       ...
     }@inputs:
     let
@@ -311,6 +307,7 @@
               packages = with nixpkgs.legacyPackages.${system}; [
                 cachix
                 gh
+                tmux
                 zstd
                 # Dev tools
                 nixd # Nix LSP
@@ -319,8 +316,6 @@
                 bash-language-server # Bash LSP
                 shellcheck # Bash linter
                 go-task # Task, kinda like `Make`
-                # Remote installation
-                nixos-anywhere.packages.${system}.default
               ];
             };
         in
