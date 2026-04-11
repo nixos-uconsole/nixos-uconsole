@@ -64,10 +64,13 @@ fi
 NEXT_VERSION="v${1#v}"
 
 missing=()
-[[ -z "${CACHIX_AUTH_TOKEN:-}" ]] && missing+=("CACHIX_AUTH_TOKEN")
-[[ -z "${GH_TOKEN:-}" && -z "${GITHUB_TOKEN:-}" ]] && missing+=("GH_TOKEN or GITHUB_TOKEN")
+for cmd in nix cachix gh zstd git; do
+  command -v "$cmd" &>/dev/null || missing+=("$cmd")
+done
+[[ -z "${CACHIX_AUTH_TOKEN:-}" ]] && missing+=("CACHIX_AUTH_TOKEN (env)")
+[[ -z "${GH_TOKEN:-}" && -z "${GITHUB_TOKEN:-}" ]] && missing+=("GH_TOKEN or GITHUB_TOKEN (env)")
 if [[ ${#missing[@]} -gt 0 ]]; then
-  echo "Error: missing required environment variables: ${missing[*]}" >&2
+  echo "Error: missing requirements: ${missing[*]}" >&2
   exit 1
 fi
 
@@ -90,7 +93,7 @@ echo "==> Compressing CM4 image..."
 CM4_IMG_NAME="nixos-uconsole-cm4-${NEXT_VERSION}.img.zst"
 CM4_IMG=$(find result/sd-image -name '*.img' -type f | head -1)
 [[ -z "$CM4_IMG" ]] && { echo "Error: No CM4 image found"; exit 1; }
-zstd -T0 "$CM4_IMG" -o "$CM4_IMG_NAME"
+zstd -f -T0 "$CM4_IMG" -o "$CM4_IMG_NAME"
 
 echo "==> Building CM5 image..."
 nix "${NIX_FLAGS[@]}" build .#minimal-cm5 2>&1 | tee build-cm5.log
@@ -102,7 +105,7 @@ echo "==> Compressing CM5 image..."
 CM5_IMG_NAME="nixos-uconsole-cm5-${NEXT_VERSION}.img.zst"
 CM5_IMG=$(find result/sd-image -name '*.img' -type f | head -1)
 [[ -z "$CM5_IMG" ]] && { echo "Error: No CM5 image found"; exit 1; }
-zstd -T0 "$CM5_IMG" -o "$CM5_IMG_NAME"
+zstd -f -T0 "$CM5_IMG" -o "$CM5_IMG_NAME"
 
 echo "==> Creating release ${NEXT_VERSION}..."
 gh release create "$NEXT_VERSION" \
