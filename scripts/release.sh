@@ -63,6 +63,14 @@ fi
 
 NEXT_VERSION="v${1#v}"
 
+missing=()
+[[ -z "${CACHIX_AUTH_TOKEN:-}" ]] && missing+=("CACHIX_AUTH_TOKEN")
+[[ -z "${GH_TOKEN:-}" && -z "${GITHUB_TOKEN:-}" ]] && missing+=("GH_TOKEN or GITHUB_TOKEN")
+if [[ ${#missing[@]} -gt 0 ]]; then
+  echo "Error: missing required environment variables: ${missing[*]}" >&2
+  exit 1
+fi
+
 echo "==> Latest version: $(get_latest_version)"
 echo "==> Releasing ${NEXT_VERSION}..."
 
