@@ -21,7 +21,7 @@ sync
 ```
 
 You may also want to consider using [Raspberry Pi Imager](https://github.com/raspberrypi/rpi-imager) with a custom repository:
-```
+```bash
 rpi-imager --repo https://raw.githubusercontent.com/jose1711/uconsole-rpi-imager-repo/master/os_list.json
 ```
 
