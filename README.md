@@ -20,6 +20,11 @@ sudo dd if=nixos-uconsole-cm4-*.img of=/dev/sdX bs=4M status=progress
 sync
 ```
 
+You may also want to consider using [Raspberry Pi Imager](https://github.com/raspberrypi/rpi-imager) with a custom repository:
+```
+rpi-imager --repo https://raw.githubusercontent.com/jose1711/uconsole-rpi-imager-repo/master/os_list.json
+```
+
 ### Resize Partition
 
 After flashing, expand the root partition:
