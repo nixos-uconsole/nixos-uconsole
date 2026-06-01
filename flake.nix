@@ -6,7 +6,7 @@
 
     # nvmd's nixos-raspberrypi provides Raspberry Pi support for NixOS
     # Handles bootloader, kernel, device trees, etc.
-    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/v1.20260317.0";
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/v1.20260517.0";
     nixos-raspberrypi.inputs.nixpkgs.follows = "nixpkgs";
   };
 
