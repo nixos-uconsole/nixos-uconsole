@@ -22,3 +22,22 @@ tasks:
     desc: "Formats the repository"
     cmds:
       - treefmt .
+
+  # Hetzner build server
+  hetzner:build:
+    desc: "Build Go tool for Hetzner builds"
+    dir: tools/hetzner-build
+    cmds:
+      - go build -o hetzner-build .
+
+  hetzner:setup:
+    desc: "Spin up Hetzner build server (keeps running)"
+    deps: [hetzner:build]
+    cmds:
+      - ./tools/hetzner-build/hetzner-build --setup-only
+
+  hetzner:release:
+    desc: "Run full release on ephemeral Hetzner server"
+    deps: [hetzner:build]
+    cmds:
+      - ./tools/hetzner-build/hetzner-build --branch feat/automate-vps-flow
