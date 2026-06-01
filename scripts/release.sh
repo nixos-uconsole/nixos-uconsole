@@ -2,8 +2,16 @@
 #
 # Release script for nixos-uconsole
 #
-# Builds CM4 and CM5 SD images, pushes to cachix, compresses with zstd,
-# creates a GitHub release, and uploads the images.
+# Builds CM4 and CM5 SD images, pushes the kernel closure to cachix
+# (small enough to fit a 5GB cache), compresses images with zstd, creates a
+# GitHub release, and uploads the images.
+#
+# We push the kernel package (not the full SD image / system closure) because:
+#   - The kernel is the one expensive thing users would otherwise rebuild from
+#     source on `nixos-rebuild`.
+#   - The SD image itself isn't reused by `nixos-rebuild`; only the system
+#     closure pulls things from the cache, and the kernel is by far the
+#     heaviest derivation in that closure that isn't already on cache.nixos.org.
 #
 set -euo pipefail
 
@@ -39,7 +47,7 @@ ARGUMENTS
 WHAT IT DOES
   1. Pull latest changes and update flake inputs
   2. Build minimal SD images (CM4 and CM5)
-  3. Push build artifacts to cachix
+  3. Push the kernel closures (CM4 + CM5) to cachix
   4. Compress images with zstd
   5. Create GitHub release with notes
   6. Upload compressed images to the release
@@ -83,11 +91,35 @@ git pull
 echo "==> Updating flake inputs..."
 nix "${NIX_FLAGS[@]}" flake update
 
+# Push the kernel package closure for a given nixosConfiguration to cachix.
+# Pushing the kernel (rather than the whole system or image) keeps the cache
+# small while still saving users from a multi-hour native rebuild.
+#
+# The kernel derivation has 3 outputs (out, dev, modules). The runtime system
+# closure only references `out` + `modules`; `dev` is a ~1 GiB tree only used
+# for building out-of-tree modules, so we skip it. Pushing just out + modules
+# keeps each release under ~100 MiB on cachix.
+push_kernel() {
+  local cfg="$1" label="$2" attr kernel_out kernel_modules
+  attr=".#nixosConfigurations.${cfg}.config.boot.kernelPackages.kernel"
+
+  echo "==> Resolving ${label} kernel store paths..."
+  kernel_out=$(nix "${NIX_FLAGS[@]}" eval --raw "$attr")
+  kernel_modules=$(nix "${NIX_FLAGS[@]}" eval --raw "${attr}.modules")
+  echo "    out:     ${kernel_out}"
+  echo "    modules: ${kernel_modules}"
+
+  echo "==> Building ${label} kernel (out + modules) into the local store..."
+  nix "${NIX_FLAGS[@]}" build --no-link "${attr}^out,modules"
+
+  echo "==> Pushing ${label} kernel (out + modules) to cachix..."
+  cachix push "$CACHE" "$kernel_out" "$kernel_modules"
+}
+
 echo "==> Building CM4 image..."
 nix "${NIX_FLAGS[@]}" build .#minimal-cm4 2>&1 | tee build-cm4.log
 
-echo "==> Pushing CM4 to cachix..."
-cachix push "$CACHE" result
+push_kernel "uconsole-cm4-minimal" "CM4"
 
 echo "==> Compressing CM4 image..."
 CM4_IMG_NAME="nixos-uconsole-cm4-${NEXT_VERSION}.img.zst"
@@ -98,8 +130,7 @@ zstd -f -T0 "$CM4_IMG" -o "$CM4_IMG_NAME"
 echo "==> Building CM5 image..."
 nix "${NIX_FLAGS[@]}" build .#minimal-cm5 2>&1 | tee build-cm5.log
 
-echo "==> Pushing CM5 to cachix..."
-cachix push "$CACHE" result
+push_kernel "uconsole-cm5-minimal" "CM5"
 
 echo "==> Compressing CM5 image..."
 CM5_IMG_NAME="nixos-uconsole-cm5-${NEXT_VERSION}.img.zst"
