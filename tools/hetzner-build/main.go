@@ -28,9 +28,10 @@ type Config struct {
 }
 
 var (
-	cfg       Config
-	cfgFile   string
-	setupOnly bool
+	cfg            Config
+	cfgFile        string
+	setupOnly      bool
+	releaseVersion string
 )
 
 func main() {
@@ -50,6 +51,8 @@ Set discord_webhook_url in config to receive notifications on success/failure.`,
 		BoolVar(&setupOnly, "setup-only", false, "Only setup server, don't run release or cleanup")
 	rootCmd.Flags().
 		StringVar(&cfg.Branch, "branch", "", "Git branch to clone (default: from config or master)")
+	rootCmd.Flags().
+		StringVar(&releaseVersion, "version", os.Getenv("RELEASE_VERSION"), "Release version to pass to release.sh (or set RELEASE_VERSION env)")
 
 	cobra.OnInitialize(initConfig)
 
@@ -107,6 +110,9 @@ type Server struct {
 }
 
 func run(cmd *cobra.Command, args []string) error {
+	if !setupOnly && releaseVersion == "" {
+		return fmt.Errorf("missing release version: pass --version or set RELEASE_VERSION")
+	}
 	if err := checkSSHAgent(); err != nil {
 		return err
 	}
@@ -369,7 +375,7 @@ func uploadReleaseScript(server *Server, nixSrc string) error {
 		}
 	}
 	script.WriteString("cd /tmp/nixos-uconsole\n")
-	script.WriteString("nix develop --command bash -c './scripts/release.sh'\n")
+	fmt.Fprintf(&script, "nix develop --command bash -c './scripts/release.sh %s'\n", shellQuote(releaseVersion))
 
 	cmd := exec.Command("ssh",
 		"-o", "StrictHostKeyChecking=no",
