@@ -37,7 +37,9 @@ tasks:
       - ./tools/hetzner-build/hetzner-build --setup-only
 
   hetzner:release:
-    desc: "Run full release on ephemeral Hetzner server"
+    desc: "Run full release on ephemeral Hetzner server (override branch with BRANCH=...)"
     deps: [hetzner:build]
+    vars:
+      BRANCH: '{{.BRANCH | default "master"}}'
     cmds:
-      - ./tools/hetzner-build/hetzner-build --branch feat/automate-vps-flow
+      - ./tools/hetzner-build/hetzner-build --branch {{.BRANCH}}
