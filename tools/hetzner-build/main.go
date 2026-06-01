@@ -115,9 +115,14 @@ func run(cmd *cobra.Command, args []string) error {
 		Name: fmt.Sprintf("nixos-builder-%d", os.Getpid()),
 	}
 
+	// `created` tracks whether the Hetzner API actually accepted a `server
+	// create` call. If it did, we MUST attempt deletion on exit even if any
+	// subsequent step (IP fetch, SSH, etc.) failed -- otherwise the server
+	// leaks and keeps billing.
+	created := false
 	shouldCleanup := true
 	defer func() {
-		if shouldCleanup && server.IP != "" {
+		if shouldCleanup && created {
 			log("Cleaning up server %s...", server.Name)
 			if err := deleteServer(server.Name); err != nil {
 				notify(
@@ -136,7 +141,7 @@ func run(cmd *cobra.Command, args []string) error {
 		cfg.FallbackTypes,
 		cfg.FallbackLocations,
 	)
-	if err := createServer(server); err != nil {
+	if err := createServer(server, &created); err != nil {
 		notify(false, "Failed to create server: "+err.Error())
 		return err
 	}
@@ -179,7 +184,8 @@ func run(cmd *cobra.Command, args []string) error {
 	nixSrc := ". /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
 
 	log("Cloning uconsole repo...")
-	cloneCmd := nixSrc + " && git clone --branch " + cfg.Branch + " " + cfg.UconsoleRepo + " /tmp/nixos-uconsole"
+	cloneCmd := nixSrc + " && git clone --branch " + shellQuote(cfg.Branch) +
+		" " + shellQuote(cfg.UconsoleRepo) + " /tmp/nixos-uconsole"
 	if err := sshCmd(server, cloneCmd); err != nil {
 		notify(false, "Failed to clone uconsole repo: "+err.Error())
 		return err
@@ -212,7 +218,7 @@ func run(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func createServer(server *Server) error {
+func createServer(server *Server, created *bool) error {
 	types := cfg.FallbackTypes
 	locations := cfg.FallbackLocations
 	if len(types) == 0 {
@@ -239,6 +245,7 @@ func createServer(server *Server) error {
 			cmd.Stderr = io.MultiWriter(os.Stderr, &stderr)
 			err := cmd.Run()
 			if err == nil {
+				*created = true
 				log("Created %s in %s", serverType, location)
 				out, err := execOutput("hcloud", "server", "ip", server.Name)
 				if err != nil {
@@ -353,7 +360,10 @@ func uploadReleaseScript(server *Server, nixSrc string) error {
 	script.WriteString("trap 'echo $? > /tmp/release-exit-code' EXIT\n")
 	script.WriteString(nixSrc + "\n")
 	script.WriteString("export HETZNER_BUILD=1\n")
-	for _, key := range []string{"GITHUB_TOKEN", "CACHIX_AUTH_TOKEN"} {
+	// Forward auth env vars. release.sh accepts either GH_TOKEN or
+	// GITHUB_TOKEN, so forward whichever is set (or both). CACHIX_AUTH_TOKEN
+	// is required.
+	for _, key := range []string{"GH_TOKEN", "GITHUB_TOKEN", "CACHIX_AUTH_TOKEN"} {
 		if v := os.Getenv(key); v != "" {
 			script.WriteString(fmt.Sprintf("export %s=%q\n", key, v))
 		}
@@ -450,4 +460,12 @@ func checkSSHAgent() error {
 
 func log(format string, args ...interface{}) {
 	fmt.Printf("==> "+format+"\n", args...)
+}
+
+// shellQuote wraps a string in single quotes for safe use in a remote shell
+// command, escaping any embedded single quotes. This prevents injection or
+// breakage when interpolating user-controlled values (branch names, URLs)
+// into commands executed over ssh.
+func shellQuote(s string) string {
+	return "'" + strings.ReplaceAll(s, "'", `'\''`) + "'"
 }
