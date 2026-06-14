@@ -1,0 +1,11 @@
+--- a/drivers/gpu/drm/panel/panel-cwu50.c
++++ b/drivers/gpu/drm/panel/panel-cwu50.c
+@@ -22,6 +22,7 @@ static void cwu50_init_sequence(struct cwu50 *ctx)
+ 	dcs_write_seq(0xE0,0x00);
+ 	dcs_write_seq(0xE1,0x93);
+ 	dcs_write_seq(0xE2,0x65);
+ 	dcs_write_seq(0xE3,0xF8);
++	dcs_write_seq(0x80,0x03); //03:4lane 02:3lane 01:2lane
+ 	dcs_write_seq(0x70,0x20);
+ 	dcs_write_seq(0x71,0x13);
+ 	dcs_write_seq(0x72,0x06);
