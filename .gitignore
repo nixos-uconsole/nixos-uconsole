@@ -11,3 +11,12 @@ build.log
 
 # Neovim DX plugin
 *.otter.*
+
+# Release script log output
+release.log
+
+# Local scratch / notes dir (not shipped)
+tmp/
+
+# Compiled Go binary for the Hetzner build helper
+tools/hetzner-build/hetzner-build

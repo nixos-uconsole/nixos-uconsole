@@ -22,3 +22,27 @@ tasks:
     desc: "Formats the repository"
     cmds:
       - treefmt .
+
+  # Hetzner build server
+  hetzner:build:
+    desc: "Build Go tool for Hetzner builds"
+    dir: tools/hetzner-build
+    cmds:
+      - go build -o hetzner-build .
+
+  hetzner:setup:
+    desc: "Spin up Hetzner build server (keeps running)"
+    deps: [hetzner:build]
+    cmds:
+      - ./tools/hetzner-build/hetzner-build --setup-only
+
+  hetzner:release:
+    desc: "Run full release on ephemeral Hetzner server (RELEASE_VERSION=1.2.3 required; override branch with BRANCH=...)"
+    deps: [hetzner:build]
+    vars:
+      BRANCH: '{{.BRANCH | default "master"}}'
+    preconditions:
+      - sh: '[ -n "$RELEASE_VERSION" ]'
+        msg: "RELEASE_VERSION must be set (e.g. RELEASE_VERSION=1.2.3 task hetzner:release)"
+    cmds:
+      - ./tools/hetzner-build/hetzner-build --branch {{.BRANCH}} --version "$RELEASE_VERSION"
