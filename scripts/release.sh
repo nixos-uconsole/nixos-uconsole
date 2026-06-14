@@ -139,7 +139,7 @@ push_kernel() {
 }
 
 echo "==> Building CM4 image..."
-nix "${NIX_FLAGS[@]}" build .#minimal-cm4 2>&1 | tee build-cm4.log
+nix "${NIX_FLAGS[@]}" build .#packages.aarch64-linux.minimal-cm4 2>&1 | tee build-cm4.log
 
 push_kernel "uconsole-cm4-minimal" "CM4"
 
@@ -150,7 +150,7 @@ CM4_IMG=$(find result/sd-image -name '*.img' -type f | head -1)
 zstd -f -T0 "$CM4_IMG" -o "$CM4_IMG_NAME"
 
 echo "==> Building CM5 image..."
-nix "${NIX_FLAGS[@]}" build .#minimal-cm5 2>&1 | tee build-cm5.log
+nix "${NIX_FLAGS[@]}" build .#packages.aarch64-linux.minimal-cm5 2>&1 | tee build-cm5.log
 
 push_kernel "uconsole-cm5-minimal" "CM5"
 
