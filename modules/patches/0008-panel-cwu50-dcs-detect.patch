@@ -1,0 +1,63 @@
+--- a/drivers/gpu/drm/panel/panel-cwu50.c
++++ b/drivers/gpu/drm/panel/panel-cwu50.c
+@@ -568,7 +568,7 @@
+ 	}
+ 	msleep(120);
+ 
+-	if (!ctx->is_new_panel) {
++	if (ctx->id_gpio && !ctx->is_new_panel) {
+ 		/* Assert reset on RESX */
+ 		dev_info(ctx->dev, "asserting reset pin for old panel\n");
+ 		gpiod_set_value_cansleep(ctx->id_gpio, 1);
+@@ -585,6 +585,7 @@
+ 	struct cwu50 *ctx = panel_to_cwu50(panel);
+ 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
+ 	int ret;
++	u8 buf[4] = { };
+ 
+ 	if (ctx->prepared)
+ 		return 0;
+@@ -616,7 +617,7 @@
+ 		msleep(5);
+ 	}
+ 
+-	if (!ctx->is_new_panel) {
++	if (ctx->id_gpio && !ctx->is_new_panel) {
+ 		dev_info(ctx->dev, "old panel, cycling the reset pin\n");
+ 		/* Cycle RESX (Hardware Reset) */
+ 		gpiod_set_value_cansleep(ctx->id_gpio, 1);
+@@ -631,6 +632,17 @@
+ 		dev_err(ctx->dev, "failed to enable vblank TE (%d)\n", ret);
+ 		return ret;
+ 	}
++	/*
++	 * Read panel chip ID register via DCS to determine revision.
++	 * This is more reliable than the GPIO strapping, which may
++	 * report incorrect value on some hardware configurations.
++	 * New revision panels (JD9365D) return 0x39.
++	 */
++	dcs_write_seq(0x11); // SLPOUT
++	msleep(120);
++	dcs_write_seq(0xE0,0x00);
++	mipi_dsi_dcs_read(dsi, 0x04, buf, 3);
++	ctx->is_new_panel = (buf[0] == 0x39);
+ 	/* Exit sleep mode and power on */
+ 	if (ctx->is_new_panel)
+ 		cwu50_init_sequence2(ctx);
+@@ -729,12 +740,12 @@
+ 		return ret;
+ 	}
+ 
+-	ctx->is_new_panel = gpiod_get_value_cansleep(ctx->id_gpio);
+-	if (ctx->is_new_panel) {
+-		dev_info(dev, "Detected new panel type\n");
+-	} else {
+-		dev_info(dev, "Detected old panel type\n");
++	if (ctx->id_gpio) {
++		int gpio_val = gpiod_get_value_cansleep(ctx->id_gpio);
++		dev_info(dev, "GPIO strapping: %d (DCS overrides in prepare)\n", gpio_val);
+ 	}
++	/* Panel detection done via DCS in prepare() */
++	ctx->is_new_panel = 0;
+ 
+ 	/*

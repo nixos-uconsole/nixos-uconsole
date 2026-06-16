@@ -1,0 +1,9 @@
+--- a/drivers/gpu/drm/panel/panel-cwu50.c
++++ b/drivers/gpu/drm/panel/panel-cwu50.c
+@@ -20,6 +20,7 @@ static void cwu50_init_sequence(struct cwu50 *ctx)
+ 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(ctx->dev);
+ 
++	dcs_write_seq(0xE0,0x00);
+ 	dcs_write_seq(0xE1,0x93);
+ 	dcs_write_seq(0xE2,0x65);
+ 	dcs_write_seq(0xE3,0xF8);
